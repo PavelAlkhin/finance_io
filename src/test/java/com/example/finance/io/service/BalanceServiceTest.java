@@ -25,7 +25,7 @@ class BalanceServiceTest {
     @Mock
     private TransactionRepository transactionRepository;
 
-    private CurrencyConverter currencyConverter = new CurrencyConverter();
+    private final CurrencyConverter currencyConverter = new CurrencyConverter();
 
     private BalanceService balanceService;
 
