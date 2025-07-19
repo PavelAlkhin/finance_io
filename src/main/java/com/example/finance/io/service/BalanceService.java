@@ -6,6 +6,7 @@ import com.example.finance.io.model.Transaction;
 import com.example.finance.io.model.TransactionType;
 import com.example.finance.io.repository.BalanceRepository;
 import com.example.finance.io.repository.TransactionRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -46,6 +47,7 @@ public class BalanceService {
     }
 
     @CacheEvict(value = "balance", key = "#name")
+    @Transactional
     public Transaction addTransaction(String name, TransactionType type, BigDecimal amount, String currency, String idempotencyKey) {
         if (idempotencyKey != null && !idempotencyKey.isBlank()) {
             Optional<Transaction> existing = txRepo.findByIdempotencyKey(idempotencyKey);
