@@ -144,7 +144,7 @@ class AccountServiceTest {
 
         // Mock transaction list for balance calculation
         List<Transaction> txs = List.of(depositUsd, depositEur, withdrawEur);
-        when(transactionRepository.findByBalance_NameOrderByTimestampDesc(balanceName)).thenReturn(txs);
+        when(transactionRepository.findByAccount_NameOrderByTimestampDesc(balanceName)).thenReturn(txs);
 
         BigDecimal expected = depositUsd.getAmountUSD()
                 .add(depositEur.getAmountUSD())

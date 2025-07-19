@@ -8,6 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
-    List<Transaction> findByBalance_NameOrderByTimestampDesc(String name);
+    List<Transaction> findByAccount_NameOrderByTimestampDesc(String name);
     Optional<Transaction> findByIdempotencyKey(String idempotencyKey);
 }

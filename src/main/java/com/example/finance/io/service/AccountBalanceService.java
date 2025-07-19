@@ -38,7 +38,7 @@ public class AccountBalanceService {
         }
         balanceRepo.findByName(name).orElseThrow(() -> new NoSuchElementException("No balance found"));
 
-        List<Transaction> txs = txRepo.findByBalance_NameOrderByTimestampDesc(name);
+        List<Transaction> txs = txRepo.findByAccount_NameOrderByTimestampDesc(name);
 
         return txs.stream().map(tx -> {
             BigDecimal usdAmount = tx.getAmountUSD();
@@ -71,6 +71,6 @@ public class AccountBalanceService {
     }
 
     public List<Transaction> getTransactions(String name) {
-        return txRepo.findByBalance_NameOrderByTimestampDesc(name);
+        return txRepo.findByAccount_NameOrderByTimestampDesc(name);
     }
 }
