@@ -24,7 +24,7 @@ REST API для управления балансом счетов с подде
 ### 1. Клонировать и собрать проект
 
 ```bash
-git clone <ваш-репозиторий>
+git clone https://github.com/PavelAlkhin/finance_io
 cd <папка_проекта>
 ./gradlew clean build
 
