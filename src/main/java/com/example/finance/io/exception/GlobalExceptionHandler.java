@@ -12,6 +12,8 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.NoSuchElementException;
+
 import static com.example.finance.io.exception.ApiErrorMessage.UNEXPECTED_INTERNAL_ERROR;
 
 
@@ -40,7 +42,7 @@ public class GlobalExceptionHandler {
         return logAndRespond(httpStatus, apiError);
     }
 
-    @ExceptionHandler({HttpMessageNotReadableException.class, })
+    @ExceptionHandler({NoSuchElementException.class, })
     public ResponseEntity<ApiErrorDto> handleHttpMessageNotReadableException(HttpMessageNotReadableException e, HttpServletRequest request) {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         ApiErrorDto apiError = buildApiErrorDto("Invalid Request Body", e.getMessage(), request, httpStatus);
