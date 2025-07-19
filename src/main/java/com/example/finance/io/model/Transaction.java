@@ -22,10 +22,10 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionType type;
 
-    @Column(precision = 19, scale = 4, nullable = false)
+    @Column(precision = 19, scale = 2, nullable = false)
     private BigDecimal amount;
 
-    @Column(precision = 19, scale = 4, nullable = false)
+    @Column(precision = 19, scale = 2, nullable = false)
     private BigDecimal amountUSD;
 
     private String currency;
