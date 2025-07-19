@@ -149,9 +149,9 @@ class BalanceServiceTest {
         BigDecimal expected = depositUsd.getAmountUSD()
                 .add(depositEur.getAmountUSD())
                 .subtract(withdrawEur.getAmountUSD())
-                .setScale(2, RoundingMode.HALF_UP);
+                .setScale(2, RoundingMode.HALF_DOWN);
 
         BigDecimal result = balanceService.getBalance(balanceName);
-        assertEquals(expected, result.setScale(2, RoundingMode.HALF_UP));
+        assertEquals(expected, result.setScale(2, RoundingMode.HALF_DOWN));
     }
 }
