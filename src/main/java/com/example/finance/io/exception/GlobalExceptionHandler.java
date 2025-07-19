@@ -24,8 +24,8 @@ public class GlobalExceptionHandler {
 
     private final ObjectMapper objectMapper;
 
-    @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<ApiErrorDto> handleForbiddenException(ForbiddenException e, HttpServletRequest request) {
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiErrorDto> handleForbiddenException(IllegalArgumentException e, HttpServletRequest request) {
         HttpStatus httpStatus = HttpStatus.FORBIDDEN;
 
         ApiErrorDto apiError = buildApiErrorDto("Forbidden", e.getMessage(), request, httpStatus);
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({NoSuchElementException.class, })
-    public ResponseEntity<ApiErrorDto> handleHttpMessageNotReadableException(HttpMessageNotReadableException e, HttpServletRequest request) {
+    public ResponseEntity<ApiErrorDto> handleHttpMessageNotReadableException(NoSuchElementException e, HttpServletRequest request) {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         ApiErrorDto apiError = buildApiErrorDto("Invalid Request Body", e.getMessage(), request, httpStatus);
 
