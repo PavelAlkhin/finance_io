@@ -16,8 +16,8 @@ public class Transaction {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "balance_id")
-    private Balance balance;
+    @JoinColumn(name = "account_id")
+    private Account account;
 
     @Enumerated(EnumType.STRING)
     private TransactionType type;

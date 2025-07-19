@@ -1,11 +1,11 @@
 package com.example.finance.io.controller;
 
-import com.example.finance.io.controller.api.BalanceApi;
+import com.example.finance.io.controller.api.AccountBalanceApi;
 import com.example.finance.io.model.Transaction;
 import com.example.finance.io.model.dto.BalanceResponse;
 import com.example.finance.io.model.dto.CreateBalanceRequest;
 import com.example.finance.io.model.dto.TransactionRequest;
-import com.example.finance.io.service.BalanceService;
+import com.example.finance.io.service.AccountBalanceService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,8 +20,8 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1")
-public class BalanceController implements BalanceApi {
-    private final BalanceService service;
+public class AccountAccountBalanceController implements AccountBalanceApi {
+    private final AccountBalanceService service;
 
     @Override
     @PostMapping("/balances")

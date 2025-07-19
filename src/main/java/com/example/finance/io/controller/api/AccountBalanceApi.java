@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import java.util.List;
 
 @Tag(name = "Balance API", description = "Управление счетом и транзакциями")
-public interface BalanceApi {
+public interface AccountBalanceApi {
 
     @Operation(summary = "Создать баланс", description = "Создаёт новый баланс с нулевым значением")
     BalanceResponse create(@RequestBody CreateBalanceRequest req);

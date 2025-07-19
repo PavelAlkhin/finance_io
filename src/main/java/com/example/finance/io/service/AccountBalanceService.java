@@ -1,10 +1,10 @@
 package com.example.finance.io.service;
 
 
-import com.example.finance.io.model.Balance;
+import com.example.finance.io.model.Account;
 import com.example.finance.io.model.Transaction;
 import com.example.finance.io.model.TransactionType;
-import com.example.finance.io.repository.BalanceRepository;
+import com.example.finance.io.repository.AccountRepository;
 import com.example.finance.io.repository.TransactionRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,15 +18,15 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class BalanceService {
-    private final BalanceRepository balanceRepo;
+public class AccountBalanceService {
+    private final AccountRepository balanceRepo;
     private final TransactionRepository txRepo;
     private final CurrencyConverter converter;
 
-    public Balance createBalance(String name) {
+    public Account createBalance(String name) {
         if (balanceRepo.findByName(name).isPresent())
             throw new IllegalArgumentException("Balance already exists");
-        Balance b = new Balance();
+        Account b = new Account();
         b.setName(name);
         return balanceRepo.save(b);
     }
@@ -59,7 +59,7 @@ public class BalanceService {
                 .orElseThrow(() -> new NoSuchElementException("No balance found"));
         Transaction tx = Transaction.builder()
                 .id(UUID.randomUUID())
-                .balance(balance)
+                .account(balance)
                 .type(type)
                 .amount(amount)
                 .currency(currency)

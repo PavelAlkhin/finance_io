@@ -2,10 +2,10 @@ package com.example.finance.io.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.example.finance.io.model.Balance;
+import com.example.finance.io.model.Account;
 import com.example.finance.io.model.Transaction;
 import com.example.finance.io.model.TransactionType;
-import com.example.finance.io.repository.BalanceRepository;
+import com.example.finance.io.repository.AccountRepository;
 import com.example.finance.io.repository.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,16 +18,16 @@ import java.util.*;
 
 import static org.mockito.Mockito.*;
 
-class BalanceServiceTest {
+class AccountServiceTest {
 
     @Mock
-    private BalanceRepository balanceRepository;
+    private AccountRepository accountRepository;
     @Mock
     private TransactionRepository transactionRepository;
 
     private final CurrencyConverter currencyConverter = new CurrencyConverter();
 
-    private BalanceService balanceService;
+    private AccountBalanceService accountBalanceService;
 
     private final String BALANCE_NAME = "main-account";
 
@@ -35,33 +35,33 @@ class BalanceServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        balanceService = new BalanceService(balanceRepository, transactionRepository, currencyConverter);
+        accountBalanceService = new AccountBalanceService(accountRepository, transactionRepository, currencyConverter);
     }
 
     @Test
     void createBalance_success() {
-        when(balanceRepository.findByName(BALANCE_NAME)).thenReturn(Optional.empty());
-        Balance newBalance = Balance.builder().id(1L).name(BALANCE_NAME).build();
-        when(balanceRepository.save(any())).thenReturn(newBalance);
+        when(accountRepository.findByName(BALANCE_NAME)).thenReturn(Optional.empty());
+        Account newAccount = Account.builder().id(1L).name(BALANCE_NAME).build();
+        when(accountRepository.save(any())).thenReturn(newAccount);
 
-        Balance b = balanceService.createBalance(BALANCE_NAME);
+        Account b = accountBalanceService.createBalance(BALANCE_NAME);
 
         assertEquals(BALANCE_NAME, b.getName());
-        verify(balanceRepository, times(1)).save(any());
+        verify(accountRepository, times(1)).save(any());
     }
 
     @Test
     void createBalance_alreadyExists() {
-        when(balanceRepository.findByName(BALANCE_NAME))
-                .thenReturn(Optional.of(Balance.builder().name(BALANCE_NAME).build()));
+        when(accountRepository.findByName(BALANCE_NAME))
+                .thenReturn(Optional.of(Account.builder().name(BALANCE_NAME).build()));
 
-        assertThrows(IllegalArgumentException.class, () -> balanceService.createBalance(BALANCE_NAME));
+        assertThrows(IllegalArgumentException.class, () -> accountBalanceService.createBalance(BALANCE_NAME));
     }
 
     @Test
     void getBalance_throwsIfNotFound() {
-        when(balanceRepository.findByName("bad")).thenReturn(Optional.empty());
-        assertThrows(NoSuchElementException.class, () -> balanceService.getBalance("bad"));
+        when(accountRepository.findByName("bad")).thenReturn(Optional.empty());
+        assertThrows(NoSuchElementException.class, () -> accountBalanceService.getBalance("bad"));
     }
 
     @Test
@@ -78,7 +78,7 @@ class BalanceServiceTest {
 
         when(transactionRepository.findByIdempotencyKey(idemKey)).thenReturn(Optional.of(existing));
 
-        Transaction result = balanceService.addTransaction(
+        Transaction result = accountBalanceService.addTransaction(
                 BALANCE_NAME, TransactionType.DEPOSIT, BigDecimal.TEN, "USD", idemKey);
 
         assertEquals(existing, result);
@@ -88,12 +88,12 @@ class BalanceServiceTest {
     @Test
     void addTransaction_createsNewIfNoIdempotency() {
         String idemKey = "idem-456";
-        Balance balance = Balance.builder().id(1L).name(BALANCE_NAME).build();
+        Account account = Account.builder().id(1L).name(BALANCE_NAME).build();
         when(transactionRepository.findByIdempotencyKey(idemKey)).thenReturn(Optional.empty());
-        when(balanceRepository.findByName(BALANCE_NAME)).thenReturn(Optional.of(balance));
+        when(accountRepository.findByName(BALANCE_NAME)).thenReturn(Optional.of(account));
 
         Transaction toSave = Transaction.builder()
-                .balance(balance)
+                .account(account)
                 .type(TransactionType.WITHDRAW)
                 .amount(BigDecimal.valueOf(5))
                 .currency("EUR")
@@ -102,7 +102,7 @@ class BalanceServiceTest {
 
         when(transactionRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-        Transaction created = balanceService.addTransaction(
+        Transaction created = accountBalanceService.addTransaction(
                 BALANCE_NAME, TransactionType.WITHDRAW, BigDecimal.valueOf(5), "EUR", idemKey);
 
         assertEquals(TransactionType.WITHDRAW, created.getType());
@@ -115,28 +115,28 @@ class BalanceServiceTest {
     @Test
     void addTransaction_depositAndWithdrawDifferentCurrencies_updatesBalanceCorrectly() {
         String balanceName = "multi-currency";
-        Balance balance = Balance.builder().id(2L).name(balanceName).build();
+        Account account = Account.builder().id(2L).name(balanceName).build();
 
-        when(balanceRepository.findByName(balanceName)).thenReturn(Optional.of(balance));
+        when(accountRepository.findByName(balanceName)).thenReturn(Optional.of(account));
         when(transactionRepository.findByIdempotencyKey(anyString())).thenReturn(Optional.empty());
         when(transactionRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         // Deposit $100 USD
-        Transaction depositUsd = balanceService.addTransaction(
+        Transaction depositUsd = accountBalanceService.addTransaction(
                 balanceName, TransactionType.DEPOSIT, BigDecimal.valueOf(100), "USD", "key-usd");
         assertEquals(TransactionType.DEPOSIT, depositUsd.getType());
         assertEquals(BigDecimal.valueOf(100), depositUsd.getAmount());
         assertEquals("USD", depositUsd.getCurrency());
 
         // Deposit €50 EUR
-        Transaction depositEur = balanceService.addTransaction(
+        Transaction depositEur = accountBalanceService.addTransaction(
                 balanceName, TransactionType.DEPOSIT, BigDecimal.valueOf(50), "EUR", "key-eur");
         assertEquals(TransactionType.DEPOSIT, depositEur.getType());
         assertEquals(BigDecimal.valueOf(50), depositEur.getAmount());
         assertEquals("EUR", depositEur.getCurrency());
 
         // Withdraw €20 EUR
-        Transaction withdrawEur = balanceService.addTransaction(
+        Transaction withdrawEur = accountBalanceService.addTransaction(
                 balanceName, TransactionType.WITHDRAW, BigDecimal.valueOf(20), "EUR", "key-eur-w");
         assertEquals(TransactionType.WITHDRAW, withdrawEur.getType());
         assertEquals(BigDecimal.valueOf(20), withdrawEur.getAmount());
@@ -151,7 +151,7 @@ class BalanceServiceTest {
                 .subtract(withdrawEur.getAmountUSD())
                 .setScale(2, RoundingMode.HALF_DOWN);
 
-        BigDecimal result = balanceService.getBalance(balanceName);
+        BigDecimal result = accountBalanceService.getBalance(balanceName);
         assertEquals(expected, result.setScale(2, RoundingMode.HALF_DOWN));
     }
 }
